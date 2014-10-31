@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2006 The Eclipse Foundation.
+ * Copyright (c) 2006, 2014 The Eclipse Foundation.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *    The Eclipse Foundation - initial API and implementation
+ *    Wayne Beaton (The Eclipse Foundation) - initial API and implementation
  *******************************************************************************/
 package org.eclipse.images.viewer;
 
@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewer.files.activator.FileImageProviderActivator;
 import org.eclipse.swt.SWT;
@@ -29,7 +30,7 @@ public class FileImageProvider implements ImageProvider {
 		this.file = file;
 	}
 
-	public Image getImage(Device device) {
+	public Image getImage(Device device, IProgressMonitor progress) {
 		/*
 		 * TODO Do we need to be smarter? It might make sense to check the file
 		 * extension to see if it's worth attempting to extract an image from
@@ -42,9 +43,9 @@ public class FileImageProvider implements ImageProvider {
 			return new Image(device, in);
 		} catch (SWTException e) {
 			if (e.code != SWT.ERROR_UNSUPPORTED_FORMAT) 
-				log(e);
+				FileImageProviderActivator.log(e);
 		} catch (Exception e) {
-			log(e);
+			FileImageProviderActivator.log(e);
 		} finally {
 			try {
 				in.close();
@@ -53,14 +54,4 @@ public class FileImageProvider implements ImageProvider {
 		}
 		return null;
 	}
-
-	public void disposeImage(Image image) {
-		image.dispose();
-	}
-	
-	private void log(Exception e) {
-		FileImageProviderActivator.log(e);
-	}
-
-
 }

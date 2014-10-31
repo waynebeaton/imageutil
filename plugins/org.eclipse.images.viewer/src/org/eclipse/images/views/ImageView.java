@@ -11,6 +11,7 @@
 package org.eclipse.images.views;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewers.ImageViewer;
@@ -81,10 +82,8 @@ public class ImageView extends ViewPart {
 
 	protected void setImageProvider(ImageProvider provider) {
 		if (provider == null) return;
-		Image image = provider.getImage(viewer.getDisplay());
-		if (image != null) {
-			viewer.setImage(image);
-		}
+		Image image = provider.getImage(viewer.getDisplay(), new NullProgressMonitor());
+		viewer.setImage(image);
 		disposeImage();
 		this.provider = provider;
 		this.image = image;
@@ -99,7 +98,7 @@ public class ImageView extends ViewPart {
 	private void disposeImage() {
 		if (provider == null) return;
 		if (image == null) return;
-		provider.disposeImage(image);
+		image.dispose();
 		provider = null;
 		image = null;
 	}

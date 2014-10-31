@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewer.rse.activator.RemoteFileImageProviderActivator;
 import org.eclipse.rse.files.ui.resources.SystemEditableRemoteFile;
@@ -23,7 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Shell;
 
 public class RemoteFileImageProvider implements ImageProvider {
 
@@ -33,7 +33,7 @@ public class RemoteFileImageProvider implements ImageProvider {
 		this.file = file;
 	}
 
-	public Image getImage(Device device) {
+	public Image getImage(Device device, IProgressMonitor monitor) {
 		// Do some simple tests to avoid trying to preview something
 		// that is not an image.
 		if (!this.file.isFile()) return null;
@@ -63,12 +63,14 @@ public class RemoteFileImageProvider implements ImageProvider {
 		
 		SystemEditableRemoteFile remote = new SystemEditableRemoteFile(this.file);
 		try {
-			remote.download((Shell)null);
+			if (!remote.download(monitor)) return null;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RemoteFileImageProviderActivator.log(e);
 			return null;
 		}
+		
+		if (monitor.isCanceled()) return null;
+		
 		File local = new File(remote.getLocalPath());
 		return getImage(local, device);
 	}
@@ -82,9 +84,9 @@ public class RemoteFileImageProvider implements ImageProvider {
 			return new Image(device, in);
 		} catch (SWTException e) {
 			if (e.code != SWT.ERROR_UNSUPPORTED_FORMAT) 
-				log(e);
+				RemoteFileImageProviderActivator.log(e);
 		} catch (Exception e) {
-			log(e);
+			RemoteFileImageProviderActivator.log(e);
 		} finally {
 			try {
 				in.close();
@@ -93,14 +95,4 @@ public class RemoteFileImageProvider implements ImageProvider {
 		}
 		return null;
 	}
-
-	public void disposeImage(Image image) {
-		image.dispose();
-	}
-	
-	private void log(Exception e) {
-		RemoteFileImageProviderActivator.log(e);
-	}
-
-
 }
