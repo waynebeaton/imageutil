@@ -1,0 +1,4 @@
+# ignore various emacs droppings
+*~
+\#*\#
+bin/

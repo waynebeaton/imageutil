@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile"
+            class="org.eclipse.images.viewer.rse.RemoteFileAdapterFactory">
+         <adapter type="org.eclipse.images.providers.ImageProvider"/>
+      </factory>
+   </extension>
+
+</plugin>
