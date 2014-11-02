@@ -11,8 +11,12 @@
 package org.eclipse.images.views;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewers.ImageViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,12 +29,13 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.WorkbenchJob;
 
 public class ImageView extends ViewPart {
-	ImageViewer viewer;
-	
+	private ImageViewer viewer;
+	private Job updateJob;
 	private ImageProvider provider;
-	Image image;
+	private Image image;
 	
 	/*
 	 * The selectionListener listens for changes in the workbench's
@@ -79,12 +84,37 @@ public class ImageView extends ViewPart {
 		getSelectionService().addPostSelectionListener(selectionListener);
 		handleSelection(getSelectionService().getSelection());
 	}
-
+	    
 	protected void setImageProvider(ImageProvider provider) {
 		if (provider == null) return;
-		Image image = provider.getImage(viewer.getDisplay(), new NullProgressMonitor());
+		
+		if (updateJob != null) updateJob.cancel();
+		
+		updateJob = new Job("Load image.") {
+	        public IStatus run(IProgressMonitor monitor) {
+	        	Image image = provider.getImage(viewer.getDisplay(), monitor);
+        		if (monitor.isCanceled()) {
+    	        	if (image != null) image.dispose();
+        			return Status.OK_STATUS;
+        		} else {
+		        	viewer.getDisplay().syncExec(new Runnable() {
+						@Override
+						public void run() {
+							setImage(provider, image);
+						}	
+		        	});
+	        	}
+	        	return Status.OK_STATUS;
+	        }
+	    };
+		
+		updateJob.schedule(0);
+	}
+	
+	private void setImage(ImageProvider provider, Image image) {
+		if (image == null) return;
 		viewer.setImage(image);
-		disposeImage();
+		if (this.image != null) this.image.dispose();
 		this.provider = provider;
 		this.image = image;
 	}

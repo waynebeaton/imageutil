@@ -7,6 +7,7 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.images.providers
 Import-Package: org.eclipse.core.commands.common,
  org.eclipse.core.runtime;version="3.4.0",
+ org.eclipse.core.runtime.jobs,
  org.eclipse.jface.viewers,
  org.eclipse.swt,
  org.eclipse.swt.events,
@@ -14,4 +15,5 @@ Import-Package: org.eclipse.core.commands.common,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
  org.eclipse.ui,
- org.eclipse.ui.part
+ org.eclipse.ui.part,
+ org.eclipse.ui.progress
