@@ -87,6 +87,7 @@ public class ImageView extends ViewPart {
 	    
 	protected void setImageProvider(ImageProvider provider) {
 		if (provider == null) return;
+		if (provider.equals(this.provider)) return;
 		
 		if (updateJob != null) updateJob.cancel();
 		

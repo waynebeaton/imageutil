@@ -95,4 +95,17 @@ public class RemoteFileImageProvider implements ImageProvider {
 		}
 		return null;
 	}
+	
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) return false;
+		if (object.getClass() != this.getClass()) return false;
+		return file.equals(((RemoteFileImageProvider)object).file);
+	}
+	
+	@Override
+	public int hashCode() {
+		return file.hashCode();
+	}
 }
