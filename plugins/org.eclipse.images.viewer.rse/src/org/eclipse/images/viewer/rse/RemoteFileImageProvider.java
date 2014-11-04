@@ -18,7 +18,7 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewer.rse.activator.RemoteFileImageProviderActivator;
-import org.eclipse.rse.files.ui.resources.SystemEditableRemoteFile;
+import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -36,46 +36,43 @@ public class RemoteFileImageProvider implements ImageProvider {
 	public Image getImage(Device device, IProgressMonitor monitor) {
 		// Do some simple tests to avoid trying to preview something
 		// that is not an image.
-		if (!this.file.isFile()) return null;
-		if (!this.file.isBinary()) return null;
+		if (!file.isFile()) return null;
+		if (!file.isBinary()) return null;
 		
 		// If it's local, go for it.
-		Object file = this.file.getFile();
-		if (file instanceof File) return getImage((File)file, device);		
+		if (file.getFile() instanceof File) 
+			return loadImage((File)file.getFile(),device);		
 		
 		//if (this.file.getLength() > somethreshold) return null;
 		
 		// Because a remote file can be very large, let's avoid trying to
 		// load anything that doesn't look like an image.
-		switch (this.file.getExtension().toUpperCase()) {
-			case "BMP":
-			case "ICO":
-			case "JPEG":
-			case "JPG":
-			case "GIF":
-			case "PNG":
-			case "TIFF":
-			case "TIF":
-				break;
-			default:
-				return null;
-		}
+		if (!ImageProvider.isImageExtension(file.getExtension())) return null;
 		
-		SystemEditableRemoteFile remote = new SystemEditableRemoteFile(this.file);
+		File local = null;
 		try {
-			if (!remote.download(monitor)) return null;
-		} catch (Exception e) {
-			RemoteFileImageProviderActivator.log(e);
+			local = File.createTempFile("image", file.getExtension());
+		} catch (IOException e) {
 			return null;
 		}
 		
+		try {
+			file.getParentRemoteFileSubSystem().download(file, local.getAbsolutePath(), this.file.getEncoding(), monitor);
+		} catch (SystemMessageException e) {
+			return null;
+		}
+
 		if (monitor.isCanceled()) return null;
 		
-		File local = new File(remote.getLocalPath());
-		return getImage(local, device);
+		Image image = loadImage(local, device);
+		
+		local.delete();
+		
+		return image;
 	}
 	
-	Image getImage(File file, Device device) {
+
+	protected Image loadImage(File file, Device device) {
 		if (!file.exists()) return null;
 		
 		InputStream in = null;
@@ -96,7 +93,6 @@ public class RemoteFileImageProvider implements ImageProvider {
 		return null;
 	}
 	
-
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;

@@ -31,12 +31,8 @@ public class FileImageProvider implements ImageProvider {
 	}
 
 	public Image getImage(Device device, IProgressMonitor progress) {
-		/*
-		 * TODO Do we need to be smarter? It might make sense to check the file
-		 * extension to see if it's worth attempting to extract an image from
-		 * the file. For now, performance seems adequate and there does not seem
-		 * to be any bizarre side-effects.
-		 */
+		if (!ImageProvider.isImageExtension(file.getFileExtension())) return null;
+		
 		InputStream in = null;
 		try {
 			in = file.getContents();

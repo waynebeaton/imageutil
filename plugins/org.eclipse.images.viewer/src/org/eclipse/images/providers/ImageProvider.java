@@ -16,6 +16,22 @@ import org.eclipse.swt.graphics.Image;
 
 public interface ImageProvider {
 
+	static boolean isImageExtension(String extension) {
+		switch (extension.toUpperCase()) {
+			case "BMP":
+			case "ICO":
+			case "JPEG":
+			case "JPG":
+			case "GIF":
+			case "PNG":
+			case "TIFF":
+			case "TIF":
+				return true;
+			default:
+				return false;
+		}
+	}
+	
 	/**
 	 * This method answers an {@link Image}. The image will be managed by
 	 * the consumer; that is, once the image is provided, the instance
