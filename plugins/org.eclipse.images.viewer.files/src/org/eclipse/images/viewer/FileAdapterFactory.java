@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.images.providers.ImageProvider;
 
-public class IFileAdapterFactory implements IAdapterFactory {
+public class FileAdapterFactory implements IAdapterFactory {
 
 	/**
 	 * This method creates an adapter for the given object. Since

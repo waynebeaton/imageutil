@@ -5,7 +5,7 @@
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.core.resources.IFile"
-            class="org.eclipse.images.viewer.IFileAdapterFactory">
+            class="org.eclipse.images.viewer.FileAdapterFactory">
          <adapter type="org.eclipse.images.providers.ImageProvider"/>
       </factory>
    </extension>
