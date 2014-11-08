@@ -17,3 +17,4 @@ Import-Package: org.eclipse.core.commands.common,
  org.eclipse.ui,
  org.eclipse.ui.part,
  org.eclipse.ui.progress
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
