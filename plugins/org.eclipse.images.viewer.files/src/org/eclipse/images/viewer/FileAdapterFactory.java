@@ -22,10 +22,12 @@ public class FileAdapterFactory implements IAdapterFactory {
 	 * of {@link IFile} adapted to {@link ImageProvider} no type
 	 * checking is done.
 	 */
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		return new FileImageProvider((IFile) adaptableObject);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class[] {IFile.class};
 	}
