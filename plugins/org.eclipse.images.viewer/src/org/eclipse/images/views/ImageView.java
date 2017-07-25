@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.images.views;
 
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.images.providers.ImageChangeListener;
@@ -70,17 +69,7 @@ public class ImageView extends ViewPart {
 	}
 
 	private void handleSelection(Object object) {
-		ImageProvider provider = null;
-
-		// First, if the object is adaptable, ask it to get an adapter.
-		if (object instanceof IAdaptable)
-			provider = ((IAdaptable)object).getAdapter(ImageProvider.class);
-
-		// If we haven't found an adapter yet, try asking the AdapterManager.
-		if (provider == null)
-			provider = (ImageProvider)Platform.getAdapterManager().loadAdapter(object, ImageProvider.class.getName());
-
-		handleSelection(provider);
+		handleSelection(Adapters.adapt(object, ImageProvider.class));
 	}
 
 	private void handleSelection(ImageProvider provider) {
