@@ -21,7 +21,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 
-public class DotImageProvider implements ImageProvider {
+public class DotImageProvider extends ImageProvider {
 
 	private String source;
 

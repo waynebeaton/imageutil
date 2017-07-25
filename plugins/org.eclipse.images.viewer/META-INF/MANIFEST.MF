@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Image Viewer Plug-in
 Bundle-SymbolicName: org.eclipse.images.viewer; singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.1.qualifier
 Bundle-Localization: plugin
 Export-Package: org.eclipse.images.providers
 Import-Package: org.eclipse.core.commands.common,
@@ -18,4 +18,4 @@ Import-Package: org.eclipse.core.commands.common,
  org.eclipse.ui,
  org.eclipse.ui.part,
  org.eclipse.ui.progress
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

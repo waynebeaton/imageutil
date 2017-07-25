@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2014 The Eclipse Foundation.
+ * Copyright (c) 2005, 2017 The Eclipse Foundation.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.images.providers.ImageChangeListener;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewers.ImageViewer;
 import org.eclipse.jface.text.ITextSelection;
@@ -45,6 +46,13 @@ public class ImageView extends ViewPart {
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			handleSelection(selection);
 		}
+	};
+	private ImageChangeListener imageChangeListener = new ImageChangeListener() {
+		@Override
+		public void imageChanged(ImageProvider imageProvider) {
+			if (imageProvider != ImageView.this.provider) return;
+			updateImage(imageProvider);
+		}		
 	};
 
 	private void handleSelection(ISelection selection) {
@@ -91,7 +99,18 @@ public class ImageView extends ViewPart {
 	protected void setImageProvider(ImageProvider provider) {
 		if (provider == null) return;
 		if (provider.equals(this.provider)) return;
+		
+		if (this.provider != null) this.provider.dispose();
+		
+		this.provider = provider;
+		provider.init();
 
+		updateImage(provider);
+	
+		provider.addImageChangeListener(imageChangeListener);
+	}
+	
+	protected void updateImage(ImageProvider provider) {
 		if (updateJob != null) updateJob.cancel();
 
 		updateJob = new Job("Load image.") {
@@ -105,7 +124,7 @@ public class ImageView extends ViewPart {
 		        	viewer.getDisplay().syncExec(new Runnable() {
 						@Override
 						public void run() {
-							setImage(provider, image);
+							setImage(image);
 						}
 		        	});
 	        	}
@@ -116,11 +135,20 @@ public class ImageView extends ViewPart {
 		updateJob.schedule(0);
 	}
 
-	private void setImage(ImageProvider provider, Image image) {
+	/**
+	 * Set the image into the viewer. If have previously set a value into
+	 * the viewer, then dispose that image. This method must be called on
+	 * the UI thread.
+	 * 
+	 * @param image
+	 */
+	private void setImage(Image image) {
 		if (image == null) return;
 		viewer.setImage(image);
+		
+		// Dispose the current image only after giving the viewer the new one.
 		if (this.image != null) this.image.dispose();
-		this.provider = provider;
+		
 		this.image = image;
 	}
 
@@ -128,13 +156,10 @@ public class ImageView extends ViewPart {
 	public void dispose() {
 		super.dispose();
 		getSelectionService().removeSelectionListener(selectionListener);
-		disposeImage();
-	}
-
-	private void disposeImage() {
-		if (provider == null) return;
-		if (image == null) return;
-		image.dispose();
+		
+		if (provider != null) provider.dispose();
+		if (image != null) image.dispose();
+		
 		provider = null;
 		image = null;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 The Eclipse Foundation.
+ * Copyright (c) 2006, 2017 The Eclipse Foundation.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,14 @@
 package org.eclipse.images.providers;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 
-public interface ImageProvider {
+public abstract class ImageProvider {
+	ListenerList<ImageChangeListener> listeners = new ListenerList<>();
 
-	static boolean isImageExtension(String extension) {
+	public static boolean isImageExtension(String extension) {
 		switch (extension.toUpperCase()) {
 			case "BMP":
 			case "ICO":
@@ -31,6 +33,10 @@ public interface ImageProvider {
 				return false;
 		}
 	}
+	
+	public void init() {}
+
+	public void dispose() {}
 	
 	/**
 	 * This method answers an {@link Image}. The image will be managed by
@@ -47,5 +53,17 @@ public interface ImageProvider {
 	 * 
 	 * @return {@link Image}
 	 */
-	Image getImage(Device device, IProgressMonitor monitor);
+	abstract public Image getImage(Device device, IProgressMonitor monitor);
+	
+	public void addImageChangeListener(ImageChangeListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeImageChangeListener(ImageChangeListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void sendImageChangeNotification() {
+		listeners.forEach(listener -> listener.imageChanged(this));
+	}
 }
