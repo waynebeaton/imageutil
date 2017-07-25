@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 The Eclipse Foundation.
+ * Copyright (c) 2006, 2017 The Eclipse Foundation.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,12 +22,15 @@ public class FileAdapterFactory implements IAdapterFactory {
 	 * of {@link IFile} adapted to {@link ImageProvider} no type
 	 * checking is done.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		return new FileImageProvider((IFile) adaptableObject);
+		IFile file = (IFile) adaptableObject;
+		if (!ImageProvider.isImageExtension(file.getFileExtension())) return null;
+		
+		return new FileImageProvider(file);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Class[] getAdapterList() {
 		return new Class[] {IFile.class};
 	}

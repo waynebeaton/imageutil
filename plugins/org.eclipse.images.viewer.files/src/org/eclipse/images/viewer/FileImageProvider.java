@@ -74,8 +74,6 @@ public class FileImageProvider extends ImageProvider {
 	
 	@Override
 	public Image getImage(Device device, IProgressMonitor progress) {
-		if (!ImageProvider.isImageExtension(file.getFileExtension())) return null;
-		
 		InputStream in = null;
 		try {
 			in = file.getContents();
