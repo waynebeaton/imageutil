@@ -33,9 +33,14 @@ public class DotTextAdapterFactory implements IAdapterFactory {
 		Pattern graphPattern = Pattern.compile("(?:static\\s*)?(?:di)?graph\\s*(?:\\w*\\s*)?\\{.*\\}", Pattern.MULTILINE | Pattern.DOTALL);
 
 		String text = ((ITextSelection) adaptableObject).getText();
+		
+		if (text == null) return null;
+		if (text.isEmpty()) return null;
+		
 		Matcher matcher = graphPattern.matcher(text);
-		if (matcher.find())
+		if (matcher.find()) {
 			return new DotImageProvider(matcher.group());
+		}
 		return null;
 	}
 
