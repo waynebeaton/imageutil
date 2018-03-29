@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Image Viewer Plug-in File Integration
 Bundle-SymbolicName: org.eclipse.images.viewer.files;singleton:=true
 Bundle-Version: 1.0.2.qualifier
-Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.images.viewer.files.activator.FileImageProviderActivator
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.core.resources,
@@ -15,3 +14,4 @@ Import-Package: org.eclipse.core.resources,
  org.osgi.framework;version="1.8.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: The Eclipse Foundation
+Automatic-Module-Name: org.eclipse.images.viewer.files

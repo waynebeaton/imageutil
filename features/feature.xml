@@ -17,6 +17,10 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import feature="org.eclipse.platform" version="4.8.0.v20180308-0630"/>
+   </requires>
+
    <plugin
          id="org.eclipse.images.viewer.files"
          download-size="0"
