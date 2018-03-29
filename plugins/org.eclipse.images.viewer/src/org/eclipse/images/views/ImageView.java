@@ -18,23 +18,34 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.images.providers.ImageChangeListener;
 import org.eclipse.images.providers.ImageProvider;
 import org.eclipse.images.viewers.ImageViewer;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.modelio.diagram.editor.handlers.PngTransfer;
 
 public class ImageView extends ViewPart {
 	private ImageViewer viewer;
 	private Job updateJob;
 	private ImageProvider provider;
 	private Image image;
+
+	private Clipboard clipboard;
 
 	/*
 	 * The selectionListener listens for changes in the workbench's
@@ -81,8 +92,38 @@ public class ImageView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
 		viewer = new ImageViewer(parent, SWT.NONE);
+		clipboard = new Clipboard(parent.getDisplay());
+
+		fillLocalToolBar(getViewSite().getActionBars().getToolBarManager());
+		
 		getSelectionService().addPostSelectionListener(selectionListener);
+
 		handleSelection(getSelectionService().getSelection());
+	}
+	
+	private void fillLocalToolBar(IToolBarManager manager) {
+		Action copyAction = new Action() {
+			public void run() {
+				Display display = viewer.getDisplay();
+				if (provider != null) {
+					Image image = provider.getImage(display, null);
+					if (image != null) {
+//						ImageTransfer imageTransfer = ImageTransfer.getInstance();
+//						clipboard.setContents(new Object[]{image.getImageData()},
+//								new Transfer[]{imageTransfer});
+						clipboard.setContents(new Object[] {image.getImageData(), "hello"}, 
+								new Transfer[] {PngTransfer.getInstance(), TextTransfer.getInstance()});
+						image.dispose();
+					}
+				}
+			}
+		};
+		copyAction.setText("Copy");
+		copyAction.setToolTipText("Copy image");
+		copyAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+				getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+		
+		manager.add(copyAction);
 	}
 
 	protected void setImageProvider(ImageProvider provider) {
@@ -144,6 +185,7 @@ public class ImageView extends ViewPart {
 	@Override
 	public void dispose() {
 		super.dispose();
+		clipboard.dispose();
 		getSelectionService().removeSelectionListener(selectionListener);
 		
 		if (provider != null) provider.dispose();

@@ -1,11 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Dot
+Bundle-Name: Image Viewer Plug-in DOT Integration
 Bundle-SymbolicName: org.eclipse.images.viewer.dot;singleton:=true
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 1.0.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.core.runtime;version="3.5.0",
  org.eclipse.images.providers,
  org.eclipse.jface.text,
  org.eclipse.swt,
  org.eclipse.swt.graphics
+Bundle-Vendor: The Eclipse Foundation
