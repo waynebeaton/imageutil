@@ -23,12 +23,12 @@ public class RemoteFileAdapterFactory implements IAdapterFactory {
 	 * of {@link IFile} adapted to {@link ImageProvider} no type
 	 * checking is done.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		return new RemoteFileImageProvider((IRemoteFile) adaptableObject);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Class[] getAdapterList() {
 		return new Class[] {IFile.class};
 	}

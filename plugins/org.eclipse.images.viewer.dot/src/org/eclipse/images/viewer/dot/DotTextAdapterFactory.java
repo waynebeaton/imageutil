@@ -27,7 +27,7 @@ public class DotTextAdapterFactory implements IAdapterFactory {
 	 * checking is done.
 	 */
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		// FIXME The graph ID can be far more interesting.
 		Pattern graphPattern = Pattern.compile("(?:static\\s*)?(?:di)?graph\\s*(?:\\w*\\s*)?\\{.*\\}", Pattern.MULTILINE | Pattern.DOTALL);
@@ -45,7 +45,7 @@ public class DotTextAdapterFactory implements IAdapterFactory {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Class[] getAdapterList() {
 		return new Class[] {ITextSelection.class};
 	}
