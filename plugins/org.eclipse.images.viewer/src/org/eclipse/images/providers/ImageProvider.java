@@ -19,6 +19,7 @@ public abstract class ImageProvider {
 	ListenerList<ImageChangeListener> listeners = new ListenerList<>();
 
 	public static boolean isImageExtension(String extension) {
+		if (extension == null) return false;
 		switch (extension.toUpperCase()) {
 			case "BMP":
 			case "ICO":
