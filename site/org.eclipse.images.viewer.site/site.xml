@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.images.viewer.feature_1.0.2.201806251508.jar" id="org.eclipse.images.viewer.feature" version="1.0.2.201806251508">
+      <category name="imageutils"/>
+   </feature>
+   <category-def name="imageutils" label="Image Utilities"/>
+</site>
