@@ -31,24 +31,18 @@ public class DotImageProvider extends ImageProvider {
 
 	@Override
 	public Image getImage(Device device, IProgressMonitor progress) {
+		// TODO What if graphviz dot is not installed?
 
-		Writer writer = null;
-		InputStream input = null;
 		try {
-			// TODO What if graphviz dot is not installed?
 			Process dot = Runtime.getRuntime().exec("dot -Tpng");
-			writer = new OutputStreamWriter(dot.getOutputStream()).append(source);
-			writer.close();
-			input = dot.getInputStream();
-			return new Image(device, input);
+			try (Writer writer = new OutputStreamWriter(dot.getOutputStream())) {
+				writer.append(source);
+			}
+			try (InputStream input = dot.getInputStream()) {
+				return new Image(device, input);
+			}
 		} catch (IOException|SWTException e) {
-
-		} finally {
-			if (input != null)
-				try {
-					input.close();
-				} catch (IOException e) {
-				}
+			// TODO Log this
 		}
 
 		return null;
