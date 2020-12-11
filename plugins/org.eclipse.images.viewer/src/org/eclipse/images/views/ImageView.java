@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -108,11 +107,8 @@ public class ImageView extends ViewPart {
 				if (provider != null) {
 					Image image = provider.getImage(display, null);
 					if (image != null) {
-//						ImageTransfer imageTransfer = ImageTransfer.getInstance();
-//						clipboard.setContents(new Object[]{image.getImageData()},
-//								new Transfer[]{imageTransfer});
-						clipboard.setContents(new Object[] {image.getImageData(), "hello"}, 
-								new Transfer[] {PngTransfer.getInstance(), TextTransfer.getInstance()});
+						clipboard.setContents(new Object[] {image.getImageData()}, 
+								new Transfer[] {PngTransfer.getInstance()});
 						image.dispose();
 					}
 				}
@@ -143,21 +139,23 @@ public class ImageView extends ViewPart {
 	protected void updateImage(ImageProvider provider) {
 		if (updateJob != null) updateJob.cancel();
 
-		updateJob = new Job("Load image.") {
+		updateJob = new Job("Load image") {
 	        @Override
 			public IStatus run(IProgressMonitor monitor) {
-	        	Image image = provider.getImage(viewer.getDisplay(), monitor);
-        		if (monitor.isCanceled()) {
-    	        	if (image != null) image.dispose();
-        			return Status.OK_STATUS;
-        		} else {
-		        	viewer.getDisplay().syncExec(new Runnable() {
-						@Override
-						public void run() {
-							setImage(image);
-						}
-		        	});
+	        	if (viewer != null && !viewer.isDisposed()) {
+		        	Image image = provider.getImage(viewer.getDisplay(), monitor);
+	        		if (monitor.isCanceled()) {
+	    	        	if (image != null) image.dispose();
+	        		} else {
+			        	viewer.getDisplay().syncExec(new Runnable() {
+							@Override
+							public void run() {
+								setImage(image);
+							}
+			        	});
+		        	}
 	        	}
+        		updateJob = null;
 	        	return Status.OK_STATUS;
 	        }
 	    };
@@ -186,7 +184,7 @@ public class ImageView extends ViewPart {
 	public void dispose() {
 		super.dispose();
 		clipboard.dispose();
-		getSelectionService().removeSelectionListener(selectionListener);
+		getSelectionService().removePostSelectionListener(selectionListener);
 		
 		if (provider != null) provider.dispose();
 		if (image != null) image.dispose();

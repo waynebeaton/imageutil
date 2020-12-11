@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.images.viewer;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
@@ -74,20 +73,13 @@ public class FileImageProvider extends ImageProvider {
 	
 	@Override
 	public Image getImage(Device device, IProgressMonitor progress) {
-		InputStream in = null;
-		try {
-			in = file.getContents();
+		try (InputStream in = file.getContents()) {
 			return new Image(device, in);
 		} catch (SWTException e) {
 			if (e.code != SWT.ERROR_UNSUPPORTED_FORMAT) 
 				FileImageProviderActivator.log(e);
 		} catch (Exception e) {
 			FileImageProviderActivator.log(e);
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-			}
 		}
 		return null;
 	}
